@@ -151,6 +151,8 @@ cd ~/paytrack/laravel
 
 php ~/bin/composer install --no-dev --optimize-autoloader
 
+php artisan migrate
+
 php artisan config:clear
 php artisan cache:clear
 php artisan config:cache
