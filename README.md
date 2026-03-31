@@ -136,3 +136,22 @@ docker compose -f docker-compose.laravel.yml down -v
 | [03.DB設計書](docs/03.DB設計書.md) | テーブル定義・ER図・DDL |
 | [04.API設計書](docs/04.API設計書.md) | エンドポイント・リクエスト/レスポンス仕様 |
 | [05.ディレクトリ構成書](docs/05.ディレクトリ構成書.md) | プロジェクト構成・各ファイルの役割 |
+
+
+## 本番環境　適用操作手順
+
+cd ~/paytrack
+
+git reset --hard
+git clean -fd
+
+git pull
+
+cd ~/paytrack/laravel
+
+php ~/bin/composer install --no-dev --optimize-autoloader
+
+php artisan config:clear
+php artisan cache:clear
+php artisan config:cache
+php artisan view:clear
