@@ -39,8 +39,16 @@
     @endforeach
 </nav>
 
-{{-- アカウント・ログアウト --}}
+{{-- 使い方・アカウント・ログアウト --}}
 <div class="px-4 py-4 border-t border-gray-100 space-y-1">
+    <a href="{{ route('guide') }}" @click="sidebarOpen = false"
+       class="flex items-center w-full px-3 py-2.5 text-sm font-medium rounded-xl transition
+              {{ request()->routeIs('guide') ? 'bg-blue-50 text-blue-700' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50' }}">
+        <svg class="w-5 h-5 mr-3 {{ request()->routeIs('guide') ? 'text-blue-600' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        使い方
+    </a>
     <a href="{{ route('account.edit') }}" @click="sidebarOpen = false"
        class="flex items-center w-full px-3 py-2.5 text-sm font-medium rounded-xl transition
               {{ request()->routeIs('account.*') ? 'bg-blue-50 text-blue-700' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50' }}">

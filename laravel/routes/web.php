@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\BankAccountController;
+use App\Http\Controllers\GuideController;
 use App\Http\Controllers\BatchController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FundTransferController;
@@ -41,6 +42,9 @@ Route::middleware('auth')->group(function () {
     // Batch Operations
     Route::post('/batch/generate', [BatchController::class, 'generate'])->name('batch.generate');
     Route::post('/batch/carry-over', [BatchController::class, 'carryOver'])->name('batch.carry-over');
+
+    // Guide
+    Route::get('/guide', [GuideController::class, 'index'])->name('guide');
 
     // Account Settings
     Route::get('/account', [AccountController::class, 'edit'])->name('account.edit');
