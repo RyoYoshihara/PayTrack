@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\BankAccountService;
 use App\Services\DashboardService;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
     public function __construct(
-        private DashboardService $dashboardService
+        private DashboardService $dashboardService,
+        private BankAccountService $bankAccountService
     ) {}
 
     public function index(Request $request)
@@ -20,6 +22,8 @@ class DashboardController extends Controller
         $summary = $this->dashboardService->getSummary($user, $year, $month);
         $accountSummaries = $this->dashboardService->getSummaryByAccount($user, $year, $month);
 
-        return view('dashboard.index', compact('year', 'month', 'summary', 'accountSummaries'));
+        $bankAccounts = $this->bankAccountService->getAll($user);
+
+        return view('dashboard.index', compact('year', 'month', 'summary', 'accountSummaries', 'bankAccounts'));
     }
 }

@@ -16,12 +16,14 @@ class BankAccount extends Model
         'user_id',
         'name',
         'bank_name',
+        'balance',
         'sort_order',
     ];
 
     protected function casts(): array
     {
         return [
+            'balance' => 'integer',
             'sort_order' => 'integer',
         ];
     }

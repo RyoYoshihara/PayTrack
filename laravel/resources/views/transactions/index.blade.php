@@ -69,7 +69,8 @@
                             <div class="flex justify-center gap-1 flex-wrap">
                                 <a href="{{ route('transactions.edit', $txn) }}" class="px-2.5 py-1 text-xs font-medium bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition">編集</a>
                                 @if($txn->isEditable())
-                                <form method="POST" action="{{ route('transactions.update-status', $txn) }}">
+                                <form method="POST" action="{{ route('transactions.update-status', $txn) }}"
+                                      onsubmit="return checkBalanceBeforeComplete(this, {{ $txn->bank_account_id ?? 'null' }}, {{ $txn->amount }}, '{{ $txn->type }}')">
                                     @csrf @method('PATCH')
                                     <input type="hidden" name="status" value="completed">
                                     <input type="hidden" name="actual_date" value="{{ now()->toDateString() }}">
@@ -94,3 +95,21 @@
     <div class="mt-4">{{ $transactions->appends(request()->query())->links() }}</div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+const accountBalances = @json($bankAccounts->pluck('balance', 'id'));
+
+function checkBalanceBeforeComplete(form, accountId, amount, type) {
+    if (type === 'expense' && accountId && accountBalances[accountId] !== undefined) {
+        if (amount > accountBalances[accountId]) {
+            const balanceFormatted = Number(accountBalances[accountId]).toLocaleString();
+            if (!confirm(`この支出（¥${Number(amount).toLocaleString()}）は口座残高（¥${balanceFormatted}）を超えています。\n\n処理を続行しますか？`)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+</script>
+@endpush

@@ -27,8 +27,9 @@ class TransactionController extends Controller
         $transactions = $this->transactionService->getForMonth(
             $request->user(), $year, $month, $type, $status
         );
+        $bankAccounts = $this->bankAccountService->getAll($request->user());
 
-        return view('transactions.index', compact('year', 'month', 'type', 'status', 'transactions'));
+        return view('transactions.index', compact('year', 'month', 'type', 'status', 'transactions', 'bankAccounts'));
     }
 
     public function create(Request $request)

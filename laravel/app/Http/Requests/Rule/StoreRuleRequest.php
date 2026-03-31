@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Rule;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreRuleRequest extends FormRequest
 {
@@ -21,7 +22,7 @@ class StoreRuleRequest extends FormRequest
             'day_of_month' => ['nullable', 'integer', 'between:1,31', 'required_if:recurrence,monthly'],
             'start_month' => ['nullable', 'date_format:Y-m'],
             'end_month' => ['nullable', 'date_format:Y-m'],
-            'bank_account_id' => ['required', 'exists:bank_accounts,id'],
+            'bank_account_id' => ['required', Rule::exists('bank_accounts', 'id')->where('user_id', $this->user()->id)],
             'memo' => ['nullable', 'string'],
         ];
     }

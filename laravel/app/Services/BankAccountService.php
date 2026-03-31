@@ -8,13 +8,14 @@ use Illuminate\Database\Eloquent\Collection;
 
 class BankAccountService
 {
-    public function create(User $user, string $name, string $bankName): BankAccount
+    public function create(User $user, array $data): BankAccount
     {
         $maxOrder = $user->bankAccounts()->max('sort_order') ?? -1;
 
         return $user->bankAccounts()->create([
-            'name' => $name,
-            'bank_name' => $bankName,
+            'name' => $data['name'],
+            'bank_name' => $data['bank_name'],
+            'balance' => $data['balance'] ?? 0,
             'sort_order' => $maxOrder + 1,
         ]);
     }

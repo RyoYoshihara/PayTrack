@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\BankAccount;
 use App\Models\Transaction;
 use App\Models\User;
 use Carbon\Carbon;
@@ -57,10 +58,17 @@ class TransactionService
         }
 
         return DB::transaction(function () use ($transaction, $newStatus, $actualDate) {
+            // 繰越済み→完了/取消の場合、翌月に作られたコピーを削除
+            if ($transaction->status === 'carried_over' && in_array($newStatus, ['completed', 'cancelled'])) {
+                Transaction::where('carried_over_from', $transaction->id)->delete();
+            }
+
             $transaction->status = $newStatus;
 
             if ($newStatus === 'completed' && $actualDate) {
                 $transaction->actual_date = $actualDate;
+                // 口座残高に反映
+                $this->applyBalanceChange($transaction);
             } elseif ($newStatus === 'carried_over') {
                 $this->createCarriedOverTransaction($transaction);
             }
@@ -73,6 +81,27 @@ class TransactionService
     public function delete(Transaction $transaction): void
     {
         $transaction->delete();
+    }
+
+    /**
+     * 取引完了時に口座残高を更新（収入: +、支出: -）
+     */
+    private function applyBalanceChange(Transaction $transaction): void
+    {
+        if (!$transaction->bank_account_id) {
+            return;
+        }
+
+        $account = BankAccount::find($transaction->bank_account_id);
+        if (!$account) {
+            return;
+        }
+
+        if ($transaction->type === 'income') {
+            $account->increment('balance', $transaction->amount);
+        } else {
+            $account->decrement('balance', $transaction->amount);
+        }
     }
 
     /**

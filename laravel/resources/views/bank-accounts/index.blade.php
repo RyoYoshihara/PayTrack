@@ -21,6 +21,7 @@
                     <tr class="bg-gray-50/50">
                         <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">口座名</th>
                         <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">銀行名</th>
+                        <th class="px-4 sm:px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">残高</th>
                         <th class="px-4 sm:px-6 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">並び順</th>
                         <th class="px-4 sm:px-6 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">操作</th>
                     </tr>
@@ -30,6 +31,7 @@
                     <tr class="hover:bg-gray-50/50 transition">
                         <td class="px-4 sm:px-6 py-4 text-sm font-medium text-gray-800">{{ $account->name }}</td>
                         <td class="px-4 sm:px-6 py-4 text-sm text-gray-500">{{ $account->bank_name }}</td>
+                        <td class="px-4 sm:px-6 py-4 text-sm text-right font-medium {{ $account->balance >= 0 ? 'text-gray-800' : 'text-red-500' }}">&yen;{{ number_format($account->balance) }}</td>
                         <td class="px-4 sm:px-6 py-4 text-center">
                             <div class="flex justify-center gap-1">
                                 @if($index > 0)
@@ -65,7 +67,7 @@
                         </td>
                     </tr>
                     @empty
-                    <tr><td colspan="4" class="px-6 py-10 text-sm text-gray-400 text-center">口座が登録されていません</td></tr>
+                    <tr><td colspan="5" class="px-6 py-10 text-sm text-gray-400 text-center">口座が登録されていません</td></tr>
                     @endforelse
                 </tbody>
             </table>

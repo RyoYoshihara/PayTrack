@@ -22,8 +22,9 @@ class FundTransferController extends Controller
         $month = (int) $request->query('month', now()->month);
 
         $transfers = $this->fundTransferService->getForMonth($request->user(), $year, $month);
+        $bankAccounts = $this->bankAccountService->getAll($request->user());
 
-        return view('fund-transfers.index', compact('year', 'month', 'transfers'));
+        return view('fund-transfers.index', compact('year', 'month', 'transfers', 'bankAccounts'));
     }
 
     public function create(Request $request)

@@ -12,6 +12,27 @@
         <x-month-picker :year="$year" :month="$month" route="dashboard" />
     </div>
 
+    {{-- 口座残高 --}}
+    @if($bankAccounts->count() > 0)
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div class="px-4 sm:px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <h3 class="text-base font-semibold text-gray-800">口座残高</h3>
+            <span class="text-lg font-bold text-gray-800">&yen;{{ number_format($bankAccounts->sum('balance')) }}</span>
+        </div>
+        <div class="divide-y divide-gray-50">
+            @foreach($bankAccounts as $account)
+            <div class="px-4 sm:px-6 py-3.5 flex items-center justify-between">
+                <div class="min-w-0">
+                    <p class="text-sm font-medium text-gray-800">{{ $account->name }}</p>
+                    <p class="text-xs text-gray-400">{{ $account->bank_name }}</p>
+                </div>
+                <p class="text-base font-bold ml-4 whitespace-nowrap {{ $account->balance >= 0 ? 'text-gray-800' : 'text-red-500' }}">&yen;{{ number_format($account->balance) }}</p>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
     {{-- 収支サマリーカード --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
@@ -100,7 +121,8 @@
             <form method="POST" action="{{ route('batch.generate') }}">
                 @csrf
                 <input type="hidden" name="target_month" value="{{ sprintf('%04d-%02d', $year, $month) }}">
-                <button type="submit" class="inline-flex items-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl transition shadow-sm">
+                <button type="submit" class="inline-flex items-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl transition shadow-sm"
+                        onclick="return confirm('ルールをもとに今月の取引データを生成しますか？')">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                     今月のデータ生成
                 </button>

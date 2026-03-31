@@ -27,8 +27,7 @@ class BankAccountController extends Controller
 
     public function store(StoreBankAccountRequest $request)
     {
-        $data = $request->validated();
-        $this->bankAccountService->create($request->user(), $data['name'], $data['bank_name']);
+        $this->bankAccountService->create($request->user(), $request->validated());
         return redirect()->route('bank-accounts.index')->with('success', '口座を登録しました。');
     }
 

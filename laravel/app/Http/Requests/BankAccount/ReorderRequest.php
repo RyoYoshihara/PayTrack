@@ -3,6 +3,7 @@
 namespace App\Http\Requests\BankAccount;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ReorderRequest extends FormRequest
 {
@@ -15,7 +16,7 @@ class ReorderRequest extends FormRequest
     {
         return [
             'ids' => ['required', 'array'],
-            'ids.*' => ['integer', 'exists:bank_accounts,id'],
+            'ids.*' => ['integer', Rule::exists('bank_accounts', 'id')->where('user_id', $this->user()->id)],
         ];
     }
 }

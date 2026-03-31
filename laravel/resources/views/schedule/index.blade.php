@@ -45,7 +45,8 @@
                         <td class="px-4 sm:px-6 py-4 text-center"><x-status-badge :status="$txn->status" /></td>
                         <td class="px-4 sm:px-6 py-4 text-center">
                             <div class="flex justify-center gap-1 flex-wrap">
-                                <form method="POST" action="{{ route('schedule.update-status', $txn) }}">
+                                <form method="POST" action="{{ route('schedule.update-status', $txn) }}"
+                                      onsubmit="return checkBalanceBeforeComplete(this, {{ $txn->bank_account_id ?? 'null' }}, {{ $txn->amount }}, '{{ $txn->type }}')">
                                     @csrf @method('PATCH')
                                     <input type="hidden" name="status" value="completed">
                                     <input type="hidden" name="actual_date" value="{{ now()->toDateString() }}">
@@ -77,3 +78,21 @@
     @endforeach
 </div>
 @endsection
+
+@push('scripts')
+<script>
+const accountBalances = @json($bankAccounts->pluck('balance', 'id'));
+
+function checkBalanceBeforeComplete(form, accountId, amount, type) {
+    if (type === 'expense' && accountId && accountBalances[accountId] !== undefined) {
+        if (amount > accountBalances[accountId]) {
+            const balanceFormatted = Number(accountBalances[accountId]).toLocaleString();
+            if (!confirm(`この支出（¥${Number(amount).toLocaleString()}）は口座残高（¥${balanceFormatted}）を超えています。\n\n処理を続行しますか？`)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+</script>
+@endpush

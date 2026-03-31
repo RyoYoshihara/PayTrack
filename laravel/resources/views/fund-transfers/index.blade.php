@@ -52,14 +52,16 @@
                             @if($ft->status === 'scheduled')
                             <div class="flex justify-center gap-1 flex-wrap">
                                 @if(!$ft->from_confirmed)
-                                <form method="POST" action="{{ route('fund-transfers.confirm', $ft) }}">
+                                <form method="POST" action="{{ route('fund-transfers.confirm', $ft) }}"
+                                      onsubmit="return checkTransferBalance({{ $ft->from_account_id }}, {{ $ft->amount }}, {{ $ft->to_confirmed ? 'true' : 'false' }})">
                                     @csrf @method('PATCH')
                                     <input type="hidden" name="side" value="from">
                                     <button type="submit" class="px-2.5 py-1 text-xs font-medium bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition whitespace-nowrap">振出確認</button>
                                 </form>
                                 @endif
                                 @if(!$ft->to_confirmed)
-                                <form method="POST" action="{{ route('fund-transfers.confirm', $ft) }}">
+                                <form method="POST" action="{{ route('fund-transfers.confirm', $ft) }}"
+                                      onsubmit="return checkTransferBalance({{ $ft->from_account_id }}, {{ $ft->amount }}, {{ $ft->from_confirmed ? 'true' : 'false' }})">
                                     @csrf @method('PATCH')
                                     <input type="hidden" name="side" value="to">
                                     <button type="submit" class="px-2.5 py-1 text-xs font-medium bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition whitespace-nowrap">振込確認</button>
@@ -82,3 +84,22 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+const accountBalances = @json($bankAccounts->pluck('balance', 'id'));
+
+function checkTransferBalance(fromAccountId, amount, otherSideConfirmed) {
+    // 相手側が既に確認済み → この確認で振替が完了する → 残高チェック
+    if (otherSideConfirmed && fromAccountId && accountBalances[fromAccountId] !== undefined) {
+        if (amount > accountBalances[fromAccountId]) {
+            const balanceFormatted = Number(accountBalances[fromAccountId]).toLocaleString();
+            if (!confirm(`この振替金額（¥${Number(amount).toLocaleString()}）は振出元口座の残高（¥${balanceFormatted}）を超えています。\n\n処理を続行しますか？`)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+</script>
+@endpush

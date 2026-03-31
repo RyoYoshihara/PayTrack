@@ -4,13 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Transaction\UpdateStatusRequest;
 use App\Models\Transaction;
+use App\Services\BankAccountService;
 use App\Services\TransactionService;
 use Illuminate\Http\Request;
 
 class ScheduleController extends Controller
 {
     public function __construct(
-        private TransactionService $transactionService
+        private TransactionService $transactionService,
+        private BankAccountService $bankAccountService
     ) {}
 
     public function index(Request $request)
@@ -38,8 +40,10 @@ class ScheduleController extends Controller
             ->orderBy('scheduled_date')
             ->get();
 
+        $bankAccounts = $this->bankAccountService->getAll($user);
+
         return view('schedule.index', compact(
-            'year', 'month', 'incomeTransactions', 'expenseTransactions'
+            'year', 'month', 'incomeTransactions', 'expenseTransactions', 'bankAccounts'
         ));
     }
 
